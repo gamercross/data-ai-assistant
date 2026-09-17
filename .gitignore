@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+*.egg-info/
+
+# Env files
+.env
+.env.local
+*.env
+
+# Firebase service account (never commit real keys)
+serviceAccountKey.json
+backend/seed_data.json
+
+# Node (frontend build helper)
+node_modules/
+
+# OS
+.DS_Store

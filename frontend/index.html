@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>내 데이터를 아는 AI 비서</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <h1>내 데이터를 아는 AI 비서</h1>
+    <button id="dark-toggle" class="icon-btn" title="다크 모드 전환">🌙</button>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="chat">채팅</button>
+    <button class="tab-btn" data-tab="data">데이터 관리</button>
+    <button class="tab-btn" data-tab="history">대화 기록</button>
+  </nav>
+
+  <main>
+    <!-- 채팅 탭 -->
+    <section id="tab-chat" class="tab-panel active">
+      <div class="summary-card" id="summary-card">
+        <span>요약 불러오는 중...</span>
+      </div>
+
+      <div class="chat-toolbar">
+        <span id="current-conversation-label">새 대화</span>
+        <button id="new-chat-btn">+ 새 대화</button>
+      </div>
+
+      <div id="chat-log" class="chat-log"></div>
+
+      <div id="chat-loading" class="chat-loading hidden">AI가 답변을 작성 중입니다...</div>
+
+      <form id="chat-form" class="chat-form">
+        <input id="chat-input" type="text" placeholder="예) 이번 달 실적이 어때?" autocomplete="off" required />
+        <button type="submit">전송</button>
+      </form>
+    </section>
+
+    <!-- 데이터 관리 탭 -->
+    <section id="tab-data" class="tab-panel">
+      <form id="data-form" class="data-form">
+        <input id="data-date" type="date" required />
+        <input id="data-value" type="number" step="1" placeholder="값 (예: 5300000)" required />
+        <input id="data-memo" type="text" placeholder="메모 (선택)" />
+        <button type="submit">추가</button>
+      </form>
+
+      <div id="data-export-buttons" class="export-buttons">
+        <button id="export-csv-btn" type="button">CSV 내보내기</button>
+        <button id="export-json-btn" type="button">JSON 내보내기</button>
+      </div>
+
+      <canvas id="trend-chart" class="trend-chart" height="160"></canvas>
+
+      <div class="table-wrap">
+        <table id="data-table">
+          <thead>
+            <tr>
+              <th>날짜</th>
+              <th>값</th>
+              <th>메모</th>
+              <th>동작</th>
+            </tr>
+          </thead>
+          <tbody id="data-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- 대화 기록 탭 -->
+    <section id="tab-history" class="tab-panel">
+      <ul id="history-list" class="history-list"></ul>
+    </section>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
