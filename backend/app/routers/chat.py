@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 from app.models import ChatRequest, ChatResponse
 from app.services.analysis import build_summary
 from app.services.firestore_client import get_firestore_client
-from app.services.openai_service import build_system_prompt, get_chat_reply
+from app.services.gemini_service import build_system_prompt, get_chat_reply
 
 router = APIRouter()
 DATA_COLLECTION = "data"
@@ -39,7 +39,7 @@ def chat(payload: ChatRequest):
 
     history = [{"role": m["role"], "content": m["content"]} for m in existing_messages]
 
-    # 3) GPT API 호출
+    # 3) Gemini API 호출
     reply = get_chat_reply(system_prompt, history, payload.message)
 
     # 4) 대화 내용을 conversations에 자동 저장

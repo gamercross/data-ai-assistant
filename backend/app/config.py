@@ -5,8 +5,8 @@ load_dotenv()
 
 
 class Settings:
-    openai_api_key: str | None = os.getenv("OPENAI_API_KEY")
-    openai_model: str = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
+    gemini_api_key: str | None = os.getenv("GEMINI_API_KEY")
+    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-3.6-flash")
     chat_max_tokens: int = int(os.getenv("CHAT_MAX_TOKENS", "500"))
     firebase_service_account_json: str | None = os.getenv("FIREBASE_SERVICE_ACCOUNT_JSON")
     allowed_origins_raw: str = os.getenv("ALLOWED_ORIGINS", "*")

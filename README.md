@@ -4,7 +4,7 @@
 
 일반적인 챗봇은 "이번 달 실적이 어때?" 같은 질문에 개인화된 답을 하지 못합니다.
 이 서비스는 사용자가 등록한 시계열 데이터(매출/실적 등)를 분석해 요약 정보를 만들고,
-그 요약을 GPT의 시스템 프롬프트에 주입(context injection)하여 **내 데이터를 아는 AI 비서**와 대화할 수 있게 합니다.
+그 요약을 Gemini의 시스템 프롬프트에 주입(context injection)하여 **내 데이터를 아는 AI 비서**와 대화할 수 있게 합니다.
 
 - 사용자가 (날짜, 값, 메모) 형태로 데이터를 등록/수정/삭제
 - 백엔드가 데이터를 분석해 기간/통계/트렌드 요약 생성
@@ -13,10 +13,10 @@
 
 ## 기술 스택
 
-- **백엔드**: FastAPI, Pydantic, firebase-admin(Firestore), openai
+- **백엔드**: FastAPI, Pydantic, firebase-admin(Firestore), google-generativeai
 - **프론트엔드**: HTML / CSS / Vanilla JavaScript (프레임워크 미사용)
 - **DB**: Firebase Firestore
-- **AI**: OpenAI Chat Completions API
+- **AI**: Google Gemini API
 - **배포**: 백엔드 - Render / 프론트엔드 - Vercel
 
 ## 배포 URL
@@ -43,6 +43,10 @@ uvicorn app.main:app --reload
 ```
 
 - Swagger UI: http://localhost:8000/docs
+- macOS에서 `Could not contact DNS servers` 류의 gRPC 오류로 Firestore 호출이 실패하면(IPv6 로컬 네임서버 관련 알려진 이슈), 아래처럼 환경 변수를 하나 추가해 실행하세요:
+  ```bash
+  GRPC_DNS_RESOLVER=native uvicorn app.main:app --reload
+  ```
 - (선택) 샘플 데이터 100개 이상 생성 후 Firestore에 저장:
   ```bash
   python seed_data.py            # Firestore에 저장 (환경변수 필요)
@@ -66,8 +70,8 @@ python3 -m http.server 5500
 
 | 변수 | 설명 |
 | --- | --- |
-| `OPENAI_API_KEY` | OpenAI API 키 |
-| `OPENAI_MODEL` | 사용할 모델 (기본 `gpt-4o-mini`) |
+| `GEMINI_API_KEY` | Google Gemini API 키 |
+| `GEMINI_MODEL` | 사용할 모델 (기본 `gemini-3.6-flash`) |
 | `CHAT_MAX_TOKENS` | 응답 최대 토큰 수 (기본 500, 비용 제어용) |
 | `FIREBASE_SERVICE_ACCOUNT_JSON` | Firebase 서비스 계정 키 JSON 전체를 한 줄 문자열로 |
 | `ALLOWED_ORIGINS` | CORS 허용 도메인 (콤마 구분, 예: `https://your-app.vercel.app`) |
@@ -115,7 +119,7 @@ python3 -m http.server 5500
 
 ### 채팅 (`/api/chat`)
 
-- `POST /api/chat` — 데이터 요약 조회 → 시스템 프롬프트 주입 → GPT 호출 → 대화 자동 저장 → 응답 반환
+- `POST /api/chat` — 데이터 요약 조회 → 시스템 프롬프트 주입 → Gemini 호출 → 대화 자동 저장 → 응답 반환
 
 ## 컨텍스트 주입 흐름
 
@@ -129,7 +133,7 @@ GET /api/data/summary  ──► 기간/개수/통계/트렌드 요약
 시스템 프롬프트 생성 (요약 삽입)
    │
    ▼
-OpenAI Chat Completions 호출 (system + 이전 대화 히스토리 + 사용자 메시지)
+Gemini 호출 (system_instruction + 이전 대화 히스토리 + 사용자 메시지)
    │
    ▼
 응답을 conversations 컬렉션에 자동 저장 (user/assistant 메시지 append)

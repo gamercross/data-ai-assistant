@@ -1,21 +1,22 @@
 from fastapi import HTTPException
-from openai import OpenAI
+from google import genai
+from google.genai import types
 
 from app.config import settings
 from app.models import DataSummary
 
-_client: OpenAI | None = None
+_client: genai.Client | None = None
 
 
-def get_openai_client() -> OpenAI:
+def _get_client() -> genai.Client:
     global _client
     if _client is None:
-        if not settings.openai_api_key:
+        if not settings.gemini_api_key:
             raise HTTPException(
                 status_code=500,
-                detail="OPENAI_API_KEY 환경 변수가 설정되어 있지 않습니다.",
+                detail="GEMINI_API_KEY 환경 변수가 설정되어 있지 않습니다.",
             )
-        _client = OpenAI(api_key=settings.openai_api_key)
+        _client = genai.Client(api_key=settings.gemini_api_key)
     return _client
 
 
@@ -34,13 +35,22 @@ def build_system_prompt(summary: DataSummary) -> str:
 
 
 def get_chat_reply(system_prompt: str, history: list[dict], user_message: str) -> str:
-    client = get_openai_client()
-    messages = [{"role": "system", "content": system_prompt}, *history, {"role": "user", "content": user_message}]
+    client = _get_client()
 
-    response = client.chat.completions.create(
-        model=settings.openai_model,
-        messages=messages,
-        max_tokens=settings.chat_max_tokens,
-        temperature=0.7,
+    contents = [
+        types.Content(role="user" if m["role"] == "user" else "model", parts=[types.Part(text=m["content"])])
+        for m in history
+    ]
+    contents.append(types.Content(role="user", parts=[types.Part(text=user_message)]))
+
+    response = client.models.generate_content(
+        model=settings.gemini_model,
+        contents=contents,
+        config=types.GenerateContentConfig(
+            system_instruction=system_prompt,
+            max_output_tokens=settings.chat_max_tokens,
+            temperature=0.7,
+            thinking_config=types.ThinkingConfig(thinking_budget=0),
+        ),
     )
-    return response.choices[0].message.content
+    return response.text
