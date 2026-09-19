@@ -23,9 +23,9 @@
 
 | 항목 | URL |
 | --- | --- |
-| 프론트엔드 | _배포 후 작성_ |
-| 백엔드 API | _배포 후 작성_ |
-| Swagger UI | `<백엔드 URL>/docs` |
+| 프론트엔드 | https://data-ai-assistant-flame.vercel.app |
+| 백엔드 API | https://data-ai-assistant-api.onrender.com |
+| Swagger UI | https://data-ai-assistant-api.onrender.com/docs |
 
 > ⚠️ Render 무료 티어는 일정 시간 요청이 없으면 슬립 상태가 되어, 첫 요청 시 최대 수십 초의 지연(콜드 스타트)이 발생할 수 있습니다. 프론트엔드 채팅 로딩 표시가 이 지연 동안 노출됩니다.
 
